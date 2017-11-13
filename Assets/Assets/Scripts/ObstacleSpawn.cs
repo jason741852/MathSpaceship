@@ -12,7 +12,7 @@ public class ObstacleSpawn : MonoBehaviour {
     public float verticalMax = 6f;
     public Vector2 speed = new Vector2(0, -3f);
 
-    private float screenWidth = Screen.width;
+    private float screenWidth = Screen.width/2;
     private Rigidbody2D rb;
 
     private Vector2 originalPosition;
@@ -21,7 +21,9 @@ public class ObstacleSpawn : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
+        rb.isKinematic = true;
         originalPosition = transform.position;
+        screenWidth = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0)).x;
         Spawn();
     }
 	
@@ -37,7 +39,7 @@ public class ObstacleSpawn : MonoBehaviour {
     {
         for(int i=0; i< maxPlatforms; i++)
         {
-            Vector2 randomPosition = new Vector2(Random.Range(-2.9f, 2.9f), originalPosition.y + Random.Range(3f, 6f));
+            Vector2 randomPosition = new Vector2(Random.Range(-screenWidth, screenWidth), originalPosition.y + Random.Range(3f, 6f));
             GameObject obst = (GameObject)Instantiate(obstacle, randomPosition, Quaternion.identity);
             Transform t = obst.transform;
             t.parent = transform;
@@ -46,13 +48,5 @@ public class ObstacleSpawn : MonoBehaviour {
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        Debug.Log("Game Over?");
-        Debug.Log(other.gameObject.tag);
-        if (other.gameObject.CompareTag("Player"))
-        {
-            SceneManager.LoadScene("GamePlay");
-        }
-    }
+
 }
