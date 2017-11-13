@@ -47,7 +47,8 @@ public class StartMenu : MonoBehaviour {
     {
         LeftButton.SetActive(true);
         RightButton.SetActive(true);
-        GameObject.Find("StartMenu").SetActive(false);
+        GameObject.Find("StartButton").SetActive(false);
         GameObject.Find("HighScore").SetActive(false);
+        GameObject.Find("Title").SetActive(false);
     }
 }

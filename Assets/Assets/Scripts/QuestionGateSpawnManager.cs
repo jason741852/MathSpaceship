@@ -129,7 +129,7 @@ public class QuestionGateSpawnManager : MonoBehaviour {
             falseAnswer1 = Random.Range(2, 15) + Random.Range(2, 15);
         }
         falseAnswer2 = Random.Range(2, 15) + Random.Range(2, 15);
-        while (falseAnswer2 == answer && falseAnswer2 == falseAnswer1)
+        while (falseAnswer2 == answer || falseAnswer2 == falseAnswer1)
         {
             falseAnswer2 = Random.Range(2, 15) + Random.Range(2, 15);
         }
