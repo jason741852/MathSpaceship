@@ -21,6 +21,8 @@ public class StartMenu : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        // Commented out for desktop version
+        //Screen.SetResolution(283, 453, false);
         btn = GetComponent<Button>();
         btn.onClick.AddListener(startSpawn);
 
