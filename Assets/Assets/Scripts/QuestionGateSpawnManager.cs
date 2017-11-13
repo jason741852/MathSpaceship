@@ -8,14 +8,28 @@ public class QuestionGateSpawnManager : MonoBehaviour {
     public GameObject QuestionGate1;
     public GameObject QuestionGate2;
     public GameObject QuestionGate3;
-    private Rigidbody2D rb;
+    public GameObject obstacle;
+
+    public float obstacleHorizontalMin = -2.9f;
+    public float obstacleHorizontalMax = 2.9f;
+    public float obstacleVerticalMin = 3f;
+    public float obstacleVerticalMax = 6f;
+    private float screenWidth = Screen.width / 2;
+
+    private Rigidbody2D rb, obstacleManagerRb;
     string questionText;
     private IEnumerator coroutine;
 
     public Vector2 speed = new Vector2(0, -3f);
     private Vector2 originalPosition;
-    public int maxPlatforms = 1;
+    public int maxObstacles = 10;
+    public int maxQuestionPhase = 5;
     private Queue<string> questionQueue = new Queue<string>();
+    private int triggerCount = 0;
+
+    private int GateIndex;
+
+    private int x, y, answer, falseAnswer1, falseAnswer2;
 
     // Use this for initialization
     void Start () {
@@ -23,6 +37,9 @@ public class QuestionGateSpawnManager : MonoBehaviour {
         QuetionGateList.Add(QuestionGate1);
         QuetionGateList.Add(QuestionGate2);
         QuetionGateList.Add(QuestionGate3);
+
+        // Obstacle assignment
+        screenWidth = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, 0)).x;
 
         originalPosition = transform.position;
         SpawnQuestions();
@@ -36,42 +53,45 @@ public class QuestionGateSpawnManager : MonoBehaviour {
 
     public void SpawnQuestions()
     {
-        for (int i = 0; i < maxPlatforms; i++)
+        for (int i = 0; i < maxQuestionPhase; i++)
         {
-            Vector2 randomPosition = new Vector2(0, originalPosition.y + 20);
+            SpawnObstacles();
+            Vector2 randomPosition = new Vector2(0, originalPosition.y + 10);
 
-            int x = Random.Range(2, 15);
-            int y = Random.Range(2, 15);
-            int answer = x + y;
-            int falseAnswer1 = Random.Range(2, 15) + Random.Range(2, 15);
-            int falseAnswer2 = Random.Range(2, 15) + Random.Range(2, 15);
+            GenerateQuestionsAndAnswers();
+
             questionText = string.Concat(x, " + ", y, " = ?");
             questionQueue.Enqueue(questionText);
 
-            int GateIndex = Random.Range(0, 3);
+            GateIndex = PickRandomGate();
 
             GameObject QuestionGate = (GameObject)Instantiate(QuetionGateList[GateIndex], randomPosition, Quaternion.identity, transform);
-
             AssignAnswer(QuestionGate, answer, falseAnswer1, falseAnswer2, GateIndex);
 
             originalPosition = randomPosition;
+            originalPosition += new Vector2(0, 10f);
         }
     }
 
     void OnTriggerEnter2D(Collider2D other)
-    {
+    { 
+        if (other.gameObject.CompareTag("Player"))
+        {
+            triggerCount++;
+        }
 
-        GameObject.Find("Question_Canvas").transform.GetChild(0).GetComponent<Text>().text = questionQueue.Dequeue();
-        Debug.Log(name);
-        coroutine = destroyQuestionCanvas(5f);
-        StartCoroutine(coroutine);
+        if (!other.gameObject.CompareTag("deletionTrigger") && triggerCount%2 == 1)
+        {
+            GameObject.Find("Canvas").transform.GetChild(2).GetComponent<Text>().text = questionQueue.Dequeue();
+            coroutine = destroyQuestionCanvas(5f);
+            StartCoroutine(coroutine);
+        }
     }
 
     private IEnumerator destroyQuestionCanvas(float waitTime)
     {
-        Debug.Log("coroutine started");
         yield return new WaitForSeconds(waitTime);
-        GameObject.Find("Question_Canvas").transform.GetChild(0).GetComponent<Text>().text = "";
+        GameObject.Find("Canvas").transform.GetChild(2).GetComponent<Text>().text = "";
     }
 
     private void AssignAnswer(GameObject QuestionGate, int RightAnswer, int FalseAnswer1, int FalseAnswer2, int GateIndex)
@@ -93,6 +113,43 @@ public class QuestionGateSpawnManager : MonoBehaviour {
             QuestionGate.transform.GetChild(3).GetComponent<Text>().text = FalseAnswer1.ToString();
             QuestionGate.transform.GetChild(4).GetComponent<Text>().text = FalseAnswer2.ToString();
             QuestionGate.transform.GetChild(5).GetComponent<Text>().text = RightAnswer.ToString();
+        }
+    }
+
+    private void GenerateQuestionsAndAnswers()
+    {
+        x = Random.Range(2, 15);
+        y = Random.Range(2, 15);
+        answer = x + y;
+
+        // Need to make sure all numbers are unique
+        falseAnswer1 = Random.Range(2, 15) + Random.Range(2, 15);
+        while (falseAnswer1 == answer)
+        {
+            falseAnswer1 = Random.Range(2, 15) + Random.Range(2, 15);
+        }
+        falseAnswer2 = Random.Range(2, 15) + Random.Range(2, 15);
+        while (falseAnswer2 == answer && falseAnswer2 == falseAnswer1)
+        {
+            falseAnswer2 = Random.Range(2, 15) + Random.Range(2, 15);
+        }
+    }
+
+    private int PickRandomGate()
+    {
+        return Random.Range(0, 3);
+    }
+
+    void SpawnObstacles()
+    {
+        for (int i = 0; i < maxObstacles; i++)
+        {
+            Vector2 randomPosition = new Vector2(Random.Range(-screenWidth, screenWidth), originalPosition.y + Random.Range(3f, 6f));
+            GameObject obst = (GameObject)Instantiate(obstacle, randomPosition, Quaternion.identity);
+            Transform t = obst.transform;
+            t.parent = transform;
+
+            originalPosition = randomPosition;
         }
     }
 

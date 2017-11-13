@@ -54,7 +54,6 @@ public class Movement : EventTrigger
 
     public override void OnPointerDown(PointerEventData data)
     {
-        Debug.Log("OnPointerDown called.");
         buttonDown = true;
     }
 
