@@ -3,23 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// StartMenu is the first script to run in the game,
+/// it disables other Manager components until the "Start" button is hit
+/// </summary>
+
 public class StartMenu : MonoBehaviour {
     QuestionGateSpawnManager spawnScript;
-    GameOverCheck gameOverCheck;
-    private Button btn;
-    private GameObject LeftButton, RightButton;
-    //private AudioSource fxSound;
-    //public AudioClip backgroundMusic;
+    PlayerManager playerManager;
+    Button btn;
+    GameObject LeftButton, RightButton;
 
     void Awake()
     {
         spawnScript = GameObject.FindObjectOfType(typeof(QuestionGateSpawnManager)) as QuestionGateSpawnManager;
         spawnScript.enabled = false;
-        gameOverCheck = GameObject.FindObjectOfType(typeof(GameOverCheck)) as GameOverCheck;
-        gameOverCheck.enabled = false;
+        playerManager = GameObject.FindObjectOfType(typeof(PlayerManager)) as PlayerManager;
+        playerManager.enabled = false;
     }
 
-	// Use this for initialization
 	void Start () {
         // Commented out for desktop version
         //Screen.SetResolution(283, 453, false);
@@ -33,7 +35,7 @@ public class StartMenu : MonoBehaviour {
     void startSpawn()
     {
         spawnScript.enabled = true;
-        gameOverCheck.enabled = true;
+        playerManager.enabled = true;
         EnableGUI();
     }
 

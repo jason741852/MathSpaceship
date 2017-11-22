@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class deleteGameObjectManager : MonoBehaviour {
+/// <summary>
+/// DeleteGameObjectManager is attached to a block under the screen, 
+/// and it deletes all objects that collides with it
+/// </summary>
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+public class DeleteGameObjectManager : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {

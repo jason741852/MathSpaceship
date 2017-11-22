@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class audioFx : MonoBehaviour {
+/// <summary>
+/// AudioFx is responsible for the background game music
+/// </summary>
+
+public class AudioFx : MonoBehaviour {
     static Object instance = null;
     AudioSource music;
 
@@ -20,7 +24,7 @@ public class audioFx : MonoBehaviour {
         }
 
     }
-    // Use this for initialization
+
     void Start () {
         music = GetComponent<AudioSource>();
         Debug.Log(this);

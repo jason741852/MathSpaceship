@@ -1,16 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
-
 using UnityEngine;
+
+/// <summary>
+/// Movement is attached to the 2 buttons,
+/// it control the left/right movement of the player
+/// </summary>
 
 public class Movement : EventTrigger
 {
-    private Vector2 speed = new Vector2(4f, 0);
-    private bool buttonDown = false;
-    private Rigidbody2D rb;
-    private float screenWidth;
-    private float spaceshipWidth;
+    Vector2 speed = new Vector2(4f, 0);
+    bool buttonDown = false;
+    Rigidbody2D rb;
+    float screenWidth;
+    float spaceshipWidth;
 
     Vector2 playerPosScreen;
 
@@ -25,6 +29,7 @@ public class Movement : EventTrigger
         rb = GameObject.Find("Player").GetComponent<Rigidbody2D>();
 
     }
+
     void Update()
     {
         playerPosScreen = Camera.main.WorldToScreenPoint(rb.position);

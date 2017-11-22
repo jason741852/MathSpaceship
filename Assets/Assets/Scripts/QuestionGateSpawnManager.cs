@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// QuestionGateSpawnManager spawns all obstacles and question gates at Start
+/// </summary>
+
 public class QuestionGateSpawnManager : MonoBehaviour {
-    private List<GameObject> QuetionGateList = new List<GameObject>();
+    List<GameObject> QuetionGateList = new List<GameObject>();
     public GameObject QuestionGate1;
     public GameObject QuestionGate2;
     public GameObject QuestionGate3;
@@ -14,26 +18,29 @@ public class QuestionGateSpawnManager : MonoBehaviour {
     public float obstacleHorizontalMax = 2.9f;
     public float obstacleVerticalMin = 3f;
     public float obstacleVerticalMax = 6f;
-    private float screenWidth = Screen.width / 2;
+    float screenWidth = Screen.width / 2;
 
-    private Rigidbody2D rb, obstacleManagerRb;
-    string questionText;
-    private IEnumerator coroutine;
+    Rigidbody2D rb, obstacleManagerRb;
 
     public Vector2 speed = new Vector2(0, -3f);
-    private Vector2 originalPosition;
-    public int maxObstacles = 10;
-    public int maxQuestionPhase = 5;
-    private Queue<string> questionQueue = new Queue<string>();
-    private int triggerCount = 0;
+    Vector2 originalPosition;
 
-    private int GateIndex;
+    public int maxObstacles;
+    public int maxQuestionPhase;
+    int triggerCount = 0;
 
-    private int x, y, answer, falseAnswer1, falseAnswer2;
+    CanvasManager canvasManager;
+    string questionText;
+    Queue<string> questionQueue = new Queue<string>(); // queue to store all questions
+
+    int GateIndex; // Index for easy randomization method
+
+    int x, y, answer, falseAnswer1, falseAnswer2;
 
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody2D>();
+        canvasManager = GameObject.Find("Canvas").GetComponent<CanvasManager>();
         QuetionGateList.Add(QuestionGate1);
         QuetionGateList.Add(QuestionGate2);
         QuetionGateList.Add(QuestionGate3);
@@ -80,21 +87,17 @@ public class QuestionGateSpawnManager : MonoBehaviour {
             triggerCount++;
         }
 
+        // Dequeue a question to canvas to display
         if (!other.gameObject.CompareTag("deletionTrigger") && triggerCount%2 == 1)
         {
-            GameObject.Find("Canvas").transform.GetChild(2).GetComponent<Text>().text = questionQueue.Dequeue();
-            coroutine = destroyQuestionCanvas(5f);
-            StartCoroutine(coroutine);
+            canvasManager.setQuestionCanvas(questionQueue.Dequeue());
         }
     }
 
-    private IEnumerator destroyQuestionCanvas(float waitTime)
-    {
-        yield return new WaitForSeconds(waitTime);
-        GameObject.Find("Canvas").transform.GetChild(2).GetComponent<Text>().text = "";
-    }
-
-    private void AssignAnswer(GameObject QuestionGate, int RightAnswer, int FalseAnswer1, int FalseAnswer2, int GateIndex)
+    /// <summary>
+    /// Assign answer randomly based on random GateIndex
+    /// </summary>
+    void AssignAnswer(GameObject QuestionGate, int RightAnswer, int FalseAnswer1, int FalseAnswer2, int GateIndex)
     {
         if (GateIndex == 0)
         {
@@ -116,7 +119,7 @@ public class QuestionGateSpawnManager : MonoBehaviour {
         }
     }
 
-    private void GenerateQuestionsAndAnswers()
+    void GenerateQuestionsAndAnswers()
     {
         x = Random.Range(2, 15);
         y = Random.Range(2, 15);
@@ -135,7 +138,7 @@ public class QuestionGateSpawnManager : MonoBehaviour {
         }
     }
 
-    private int PickRandomGate()
+    int PickRandomGate()
     {
         return Random.Range(0, 3);
     }
