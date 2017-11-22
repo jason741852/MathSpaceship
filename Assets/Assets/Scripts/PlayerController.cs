@@ -8,7 +8,7 @@ using UnityEngine;
 /// it control the left/right movement of the player
 /// </summary>
 
-public class Movement : EventTrigger
+public class PlayerController : EventTrigger
 {
     Vector2 speed = new Vector2(4f, 0);
     bool buttonDown = false;
